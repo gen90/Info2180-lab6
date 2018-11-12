@@ -11,7 +11,7 @@
         <div>
             <?php require "request.php"?>
             <form>
-                <input type = "text" name = "word">
+                <input type = "text" id = "wordSearch">
             </form>
             <button id = "submit">
                 Submit
@@ -24,13 +24,13 @@
             function search(){
                var request = new XMLHttpRequest();
                request.onreadystatechange = setUp;
-                request.open('GET',"request.php?q=definition");
+                request.open('GET',"request.php?q=" +document.getElementById("wordSearch").value);
                request.send();
                
                function setUp(){
                   if (request.readyState === XMLHttpRequest. DONE) {
                      if (request. status === 200) {
-                    alert(request.responseText);
+                        document.getElementById('results').innerHTML = request.responseText;
                      } else {
                         alert('There was a problem with the request.' );
                      }
