@@ -2,42 +2,86 @@
 <html>
     <head>
         <title>Dictionary</title>
-		<meta charset="utf-8" />
-		<link rel="stylesheet" type="text/css" href="style.css" />
+		
     </head>
     <body>
         <header>Web Dictionary</header>
         <p>Lookup the definition of a word</p>
         <div>
-            <?php require "request.php"?>
             <form>
                 <input type = "text" id = "wordSearch">
             </form>
-            <button id = "submit">
-                Submit
-            </button>
+            <button id = "submit">Submit</button>
+            <button id = "alldefns">Get All Definitions</button>
         </div>
         <div id = "results"></div>
         
         <script>
-            document.getElementById("submit").addEventListener("click",search);
-            function search(){
-               var request = new XMLHttpRequest();
-               request.onreadystatechange = setUp;
-                request.open('GET',"request.php?q=" +document.getElementById("wordSearch").value);
-               request.send();
-               
-               function setUp(){
-                  if (request.readyState === XMLHttpRequest. DONE) {
-                     if (request. status === 200) {
-                        document.getElementById('results').innerHTML = request.responseText;
-                     } else {
-                        alert('There was a problem with the request.' );
-                     }
+            var getXml = document.getElementById("alldefns"); 
+            var subBtn = document.getElementById("submit");
+            subBtn.addEventListener("click", findWord);
+            
+            function findWord(){
+                var search = document.getElementById('wordSearch').value;
+                if(search.length==0){
+                    document.getElementById("results").innerHTML = "";
+                }
+                else{
+                    var request = new XMLHttpRequest();
+
+                    request.onreadystatechange = function(){
+                        if (request.readyState == XMLHttpRequest.DONE) {   
+                       if (request.status == 200) {
+                           var responses = request.responseXML.getElementsByTagName('definition');
+                           for(let i=0;i<responses.length;i++){
+                               if(responses[i].getAttribute('name').toString().trim()==search.toString().trim()){
+                                    document.getElementById('results').innerHTML ="<h3><strong>" + responses[i].getAttribute('name').toUpperCase()+" </h3></strong> - " + responses[i].getAttribute('author') + "<p>" + responses[i].innerHTML + "</p>";
+                               }
+                           }
+                       }
                     }
-              }
+        	        }; 
+        	        request.open('GET',"request.php",true);
+                request.send();
+                }
+                
             }
+ 
+            
+         getXml.addEventListener('click', function() { 
+         var request = new XMLHttpRequest(); 
+ 
+ 
+         
+         var url = "request.php"; 
+         request.onreadystatechange = getXml; 
+         request.open('GET','request.php?q=&all=true'); 
+         request.send(); 
+ 
+ 
+         function getXml() { 
+             if (request.readyState === XMLHttpRequest.DONE) { 
+               if (request.status === 200) {
+                   
+                 var response = request.responseXML; 
+                 var results = document.getElementById("results"); 
+                 var defns = response.getElementsByTagName('definition'); 
+                results.innerHTML = "";
+ 
+                 var list = document.createElement('ol'); 
+                 
+                 for (var x = 0; x < defns.length; x++) { 
+                     var inside = document.createElement('li');
+                     inside.innerHTML = "<h3><strong>" + defns[x].getAttribute('name').toUpperCase()+" </h3></strong> - " + defns[x].getAttribute('author') + "<p>" + defns[x].innerHTML + "</p>"
+                     list.append(inside); 
+                 } 
+                 results.append(list);
+               } else { 
+                 alert('Request error.'); 
+               } 
+             } 
+         } 
+     }); 
         </script>
-    
-    </body>
-</html>
+        </body>
+        </html>
