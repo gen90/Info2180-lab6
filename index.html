@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dictionary</title>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" type="text/css" href="style.css" />
+    </head>
+    <body>
+        <header>Web Dictionary</header>
+        <p>Lookup the definition of a word</p>
+        <div>
+            <?php require "request.php"?>
+            <form>
+                <input type = "text" name = "word">
+            </form>
+            <button id = "submit">
+                Submit
+            </button>
+        </div>
+        <div id = "results"></div>
+        
+        <script>
+            document.getElementById("submit").addEventListener("click",search);
+            function search(){
+               var request = new XMLHttpRequest();
+               request.onreadystatechange = setUp;
+                request.open('GET',"request.php?q=definition");
+               request.send();
+               
+               function setUp(){
+                  if (request.readyState === XMLHttpRequest. DONE) {
+                     if (request. status === 200) {
+                    alert(request.responseText);
+                     } else {
+                        alert('There was a problem with the request.' );
+                     }
+                    }
+              }
+            }
+        </script>
+    
+    </body>
+</html>
